@@ -79,6 +79,10 @@ See also [debug docs](debug.md)
 | RX_DATA | 0x80000C0 (R) | Reads any received byte |
 | RX_STATUS | 0x80000C4 (R) | Bit 0 indicates whether a received byte is available to be read. |
 
+### Edge Counter
+
+The [edge counter](user_peripherals/edge_counter.md) is simple peripheral 0, with base address 0x8000400.
+
 # How to test
 
 Load an image into flash and then select the design.
