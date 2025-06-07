@@ -19,7 +19,7 @@ Instructions are read using QSPI from Flash, and a QSPI PSRAM is used for memory
 
 Code can only be executed from flash.  Data can be read from flash and RAM, and written to RAM.
 
-The SoC includes a UART and an SPI controller.
+This version of the SoC is designed to integrate with many user peripherals.
 
 ## Address map
 
@@ -28,57 +28,22 @@ The SoC includes a UART and an SPI controller.
 | 0x0000000 - 0x0FFFFFF | Flash |
 | 0x1000000 - 0x17FFFFF | RAM A |
 | 0x1800000 - 0x1FFFFFF | RAM B |
-| 0x7FFFF00 - 0x7FFFFFF | Internal RAM (32 bytes, wrapped) |
-| 0x8000000 - 0x8000007 | GPIO  |
-| 0x8000010 - 0x800001F | UART |
-| 0x8000020 - 0x8000027 | SPI |
-| 0x8000028 - 0x800002B | PWM |
-| 0x8000030 - 0x8000033 | DEBUG |
+| 0x8000000 - 0x8000033 | DEBUG  |
 | 0x8000034 - 0x800003B | TIME |
-| 0x8000040 - 0x8000047 | GAME |
-
-### GPIO
-
-| Register | Address | Description |
-| -------- | ------- | ----------- |
-| OUT      | 0x8000000 (W) | Control out0-7, if the corresponding bit in SEL is high |
-| OUT      | 0x8000000 (R) | Reads the current state of out0-7 |
-| IN       | 0x8000004 (R) | Reads the current state of in0-7 |
-| SEL      | 0x800000C (R/W) | Bits 0-7 enable general purpose output on the corresponding bit on out0-7.  Bit 8 enables PWM output on out7, bit 9 enables PWM output on io7. |
-
-### UART
-
-| Register | Address | Description |
-| -------- | ------- | ----------- |
-| DATA     | 0x8000010 (W) | Transmits the byte |
-| DATA     | 0x8000010 (R) | Reads any received byte |
-| STATUS   | 0x8000014 (R) | Bit 0 indicates whether the UART TX is busy, bytes should not be written to the data register while this bit is set.  Bit 1 indicates whether a received byte is available to be read. |
-
-### Debug UART (Transmit only)
-
-| Register | Address | Description |
-| -------- | ------- | ----------- |
-| DATA     | 0x8000018 (W) | Transmits the byte |
-| STATUS   | 0x800001C (R) | Bit 0 indicates whether the UART TX is busy, bytes should not be written to the data register while this bit is set. |
-
-### SPI
-
-| Register | Address | Description |
-| -------- | ------- | ----------- |
-| DATA     | 0x8000020 (W) | Transmits the byte in bits 7-0, bit 8 is set if this is the last byte of the transaction, bit 9 controls Data/Command on out3 |
-| DATA     | 0x8000020 (R) | Reads the last received byte |
-| CONFIG   | 0x8000024 (W) | The low 4 bits set the clock divisor for the SPI clock to 2*(value + 1), bit 8 adds half a cycle to the read latency when set |
-| STATUS   | 0x8000024 (R) | Bit 0 indicates whether the SPI is busy, bytes should not be written or read from the data register while this bit is set. |
-
-### PWM
-
-| Register | Address | Description |
-| -------- | ------- | ----------- |
-| LEVEL    | 0x8000028 (W) | Set the PWM output level (0-255) |
+| 0x8000040 - 0x800007F | GPIO |
+| 0x8000080 - 0x80000FF | UART (user peripherals 0-1) |
+| 0x8000100 - 0x80003FF | User peripherals 2-13 |
+| 0x8000400 - 0x80004FF | Simple user peripherals 0-15 |
 
 ### DEBUG
 
-See [debug docs](debug.md)
+| Register | Address | Description |
+| -------- | ------- | ----------- |
+| SEL      | 0x800000C (R/W) | Bits 6-7 enable peripheral output on the corresponding bit on out6-7, otherwise out6-7 is used for debug. |
+| DEBUG_UART_DATA | 0x8000018 (W) | Transmits the byte on the debug UART |
+| STATUS   | 0x800001C (R) | Bit 0 indicates whether the debug UART TX is busy, bytes should not be written to the data register while this bit is set. |
+
+See also [debug docs](debug.md)
 
 ### TIME
 
@@ -87,14 +52,32 @@ See [debug docs](debug.md)
 | MTIME    | 0x8000034 (RW) | Get/set the 1MHz time count |
 | MTIMECMP | 0x8000038 (RW) | Get/set the time to trigger the timer interrupt |
 
-### GAME
+### GPIO
 
 | Register | Address | Description |
 | -------- | ------- | ----------- |
-| Controller 1 | 0x80000040 (R) | Controller 1 state |
-| Controller 2 | 0x80000044 (R) | Controller 2 state |
+| OUT | 0x8000040 (RW) | Control for out0-7 if the GPIO peripheral is selected |
+| IN  | 0x8000044 (R) | Reads the current state of in0-7 |
+| FUNC_SEL | 0x8000060 - 0x800007F | Function select for out0-7 |
 
-Controller state is in the low 12 bits of the register, in order (MSB to LSB): b, y, select, start, up, down, left, right, a, x, l, r
+| Function Select | Peripheral |
+| --------------- | ---------- |
+| 0               | Disabled   |
+| 1               | GPIO       |
+| 2               | UART TX    |
+| 3               | UART RX    |
+| 4 - 15          | User peripheral 2-13 |
+| 16              | Edge counter |
+| 17 - 31         | Simple user peripheral 1-15 |
+
+### UART
+
+| Register | Address | Description |
+| -------- | ------- | ----------- |
+| TX_DATA | 0x8000080 (W) | Transmits the byte on the UART |
+| TX_BUSY | 0x8000084 (R) | Bit 0 indicates whether the UART TX is busy, bytes should not be written to the data register while this bit is set. |
+| RX_DATA | 0x80000C0 (R) | Reads any received byte |
+| RX_STATUS | 0x80000C4 (R) | Bit 0 indicates whether a received byte is available to be read. |
 
 # How to test
 
@@ -111,7 +94,7 @@ Reset the design as follows:
 * Set clock low
 * Start clocking normally
 
-Based on the observed latencies from tt3p5 testing, at the target 64MHz clock a read latency of 2 or 3 is likely required.  The maximum supported latency is currently 3, but should get up to 5 to have a chance at running at faster clock speeds.
+Based on the observed latencies from tt06 testing, at the target 64MHz clock a read latency of 2 is required.  The maximum supported latency is currently 3.
 
 The above should all be handled by some MicroPython scripts for the RP2040 on the TT demo PC.
 
