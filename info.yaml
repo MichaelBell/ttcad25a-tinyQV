@@ -1,9 +1,9 @@
 # Tiny Tapeout project information
 project:
-  title:        "TinyQV Risc-V SoC"      # Project title
+  title:        "TinyQV SoC with additional peripherals"      # Project title
   author:       "Michael Bell"      # Your name
   discord:      "rebelmike"      # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
-  description:  "A Risc-V SoC for Tiny Tapeout"      # One line description of what your project does
+  description:  "A Risc-V SoC with Tiny Tapeout contributed peripherals"      # One line description of what your project does
   language:     "Verilog" # other examples include SystemVerilog, Amaranth, VHDL, etc
   clock_hz:     64000000       # Clock frequency in Hz (or 0 if not applicable)
 
@@ -42,20 +42,20 @@ pinout:
   # Inputs
   ui[0]: "Interrupt 0"
   ui[1]: "Interrupt 1"
-  ui[2]: "SPI MISO"
+  ui[2]: ""
   ui[3]: "1 MHz clock for time"
-  ui[4]: "Game controller latch"
-  ui[5]: "Game controller clock"
-  ui[6]: "Game controller data"
+  ui[4]: ""
+  ui[5]: ""
+  ui[6]: ""
   ui[7]: "UART RX"
 
   # Outputs
   uo[0]: "UART TX"
   uo[1]: "UART RTS"
-  uo[2]: "SPI DC"
-  uo[3]: "SPI MOSI"
-  uo[4]: "SPI CS"
-  uo[5]: "SPI SCK"
+  uo[2]: ""
+  uo[3]: ""
+  uo[4]: ""
+  uo[5]: ""
   uo[6]: "Debug UART TX"
   uo[7]: "Debug signal / PWM"
 
