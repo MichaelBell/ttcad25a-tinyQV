@@ -14,7 +14,7 @@ from riscvmodel.regnames import x0, x1, sp, gp, tp, a0, a1, a2, a3
 from riscvmodel import csrnames
 from riscvmodel.variant import RV32E
 
-from test_util import reset, start_read, send_instr, start_nops, stop_nops, read_byte, read_reg, load_reg
+from test_util import reset, start_read, send_instr, start_nops, stop_nops, read_byte, read_reg, load_reg, expect_load, expect_store
 
 @cocotb.test()
 async def test_start(dut):
