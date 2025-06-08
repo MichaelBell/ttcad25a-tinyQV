@@ -11,6 +11,8 @@ from riscvmodel.regnames import x0, gp, tp, a0, a1
 
 import test_util as tqv
 
+BASE_ADDRESS = 0x400
+PERIPHERAL_NUM = 16
 
 REG_RESET = 0x00
 REG_INC = 0x01
@@ -22,13 +24,13 @@ EDGE_RISING = 1
 EDGE_FALLING = 2
 
 async def write_reg(dut, reg, value):
-    await tqv.send_instr(dut, InstructionADDI(a0, tp, 0x400).encode())
+    await tqv.send_instr(dut, InstructionADDI(a0, tp, BASE_ADDRESS).encode())
     await tqv.send_instr(dut, InstructionADDI(a1, x0, value).encode())
     await tqv.send_instr(dut, InstructionSB(a0, a1, reg).encode())
 
 
 async def read_reg(dut, reg):
-    await tqv.send_instr(dut, InstructionADDI(a0, tp, 0x400).encode())
+    await tqv.send_instr(dut, InstructionADDI(a0, tp, BASE_ADDRESS).encode())
     await tqv.send_instr(dut, InstructionLBU(a1, a0, reg).encode())
     return await tqv.read_reg(dut, a1)
 
@@ -49,11 +51,7 @@ async def test_project(dut):
     dut._log.info("Test register access")
 
     # Set all outputs to edge detector
-    await tqv.send_instr(dut, InstructionADDI(a0, x0, 0xc0).encode())
-    await tqv.send_instr(dut, InstructionSW(tp, a0, 0xc).encode())
-    await tqv.send_instr(dut, InstructionADDI(a0, x0, 16).encode())
-    for func_sel in range(0x60, 0x80, 4):
-        await tqv.send_instr(dut, InstructionSW(tp, a0, func_sel).encode())
+    await tqv.set_all_outputs_to_peripheral(dut, PERIPHERAL_NUM)
 
     # Set the input values you want to test
     await write_reg(dut, REG_RESET, 0)

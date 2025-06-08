@@ -5,7 +5,7 @@ from cocotb.triggers import ClockCycles, Timer
 
 from riscvmodel.insn import *
 
-from riscvmodel.regnames import x0, gp, tp
+from riscvmodel.regnames import x0, gp, tp, a0
 
 
 async def reset(dut, latency=1, ui_in=0x80):
@@ -296,3 +296,10 @@ async def read_reg(dut, reg):
     await send_instr(dut, instr)
 
     return await expect_store(dut, 0x1000400 + offset)
+
+async def set_all_outputs_to_peripheral(dut, peripheral_num):
+    await send_instr(dut, InstructionADDI(a0, x0, 0xc0).encode())
+    await send_instr(dut, InstructionSW(tp, a0, 0xc).encode())
+    await send_instr(dut, InstructionADDI(a0, x0, peripheral_num).encode())
+    for func_sel in range(0x60, 0x80, 4):
+        await send_instr(dut, InstructionSW(tp, a0, func_sel).encode())

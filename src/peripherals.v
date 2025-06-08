@@ -266,7 +266,7 @@ module tinyQV_peripherals (
         .data_out(data_from_simple_peri[0])
     );
 
-    tqvp_simple_example i_user_simple01 (
+    tqvp_simple_pwm i_simple_pwm (
         .clk(clk),
         .rst_n(rst_n),
 
@@ -281,9 +281,24 @@ module tinyQV_peripherals (
         .data_out(data_from_simple_peri[1])
     );
 
+    tqvp_simple_example i_user_simple02 (
+        .clk(clk),
+        .rst_n(rst_n),
+
+        .ui_in(ui_in),
+        .uo_out(uo_out_from_simple_peri[2]),
+
+        .address(addr_in[3:0]),
+
+        .data_write((data_write_n != 2'b11) & peri_simple[2]),
+        .data_in(data_in[7:0]),
+
+        .data_out(data_from_simple_peri[2])
+    );
+
     // Unallocated peripherals, move up to explicit entry above to add a design.
     generate
-        for (i = 2; i < 16; i = i + 1) begin
+        for (i = 3; i < 16; i = i + 1) begin
             tqvp_simple_example i_user_simple (
                 .clk(clk),
                 .rst_n(rst_n),
