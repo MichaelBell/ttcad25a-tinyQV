@@ -41,8 +41,8 @@ module tinyQV_peripherals (
     reg         data_out_hold;
     reg         data_ready_r;
 
-    reg         last_txn_req;
-    wire        txn_req = (data_read_n != 2'b11 || data_write_n != 2'b11);
+    reg         last_read_req;
+    wire        read_req = data_read_n != 2'b11;
 
     // Muxed data out direct from selected peripheral
     reg [31:0] data_from_peri;
@@ -64,7 +64,7 @@ module tinyQV_peripherals (
     always @(posedge clk) begin
         if (!rst_n) begin
             data_out_hold <= 0;
-            last_txn_req <= 0;
+            last_read_req <= 0;
         end else begin
             if (data_read_complete) data_out_hold <= 0;
 
@@ -73,10 +73,10 @@ module tinyQV_peripherals (
                 data_out_r <= data_from_peri;
             end
 
-            last_txn_req <= txn_req;
+            last_read_req <= read_req;
 
             // Data ready must be registered because data_out is.
-            data_ready_r <= (last_txn_req && txn_req && data_ready_from_peri);
+            data_ready_r <= (last_read_req && read_req && data_ready_from_peri);
         end
     end
 
