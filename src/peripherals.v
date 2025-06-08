@@ -81,7 +81,7 @@ module tinyQV_peripherals (
     end
 
     assign data_out = data_out_r;
-    assign data_ready = data_ready_r;
+    assign data_ready = data_ready_r || data_write_n != 2'b11;
 
     // --------------------------------------------------------------------- //
     // Decode the address to select the active peripheral
