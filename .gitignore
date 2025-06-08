@@ -9,6 +9,7 @@ test/sim_build
 test/user_peripherals/__pycache__/
 test/__pycache__/
 test/*results.xml
+test/peri-*.xml
 test/gate_level_netlist.v
 *.swp
 *.asc
