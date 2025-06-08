@@ -175,9 +175,12 @@ module tqvp_game_pmod (
                       (address == 6'h10) ? {31'h0, select_interrupt} :
                       32'h0;
 
+    // Outputs are unused but must be driven
+    assign uo_out = 0;
+
     // List all unused inputs to prevent warnings
     // data_read_n is unused as none of our behaviour depends on whether
     // registers are being read.
-    wire _unused = &{data_read_n, data_in[31:1], 1'b0};
+    wire _unused = &{data_read_n, data_in[31:1], ui_in[7], ui_in[3:0], 1'b0};
 
 endmodule
