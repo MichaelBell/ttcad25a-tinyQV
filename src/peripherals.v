@@ -205,7 +205,7 @@ module tinyQV_peripherals (
     // --------------------------------------------------------------------- //
     // Full interface peripherals
 
-    tqvp_example i_user_peri04 (
+    tqvp_game_pmod i_game_pmod (
         .clk(clk),
         .rst_n(rst_n),
 
@@ -224,9 +224,28 @@ module tinyQV_peripherals (
         .user_interrupt(user_interrupts[4])
     );
 
+    tqvp_example i_user_peri05 (
+        .clk(clk),
+        .rst_n(rst_n),
+
+        .ui_in(ui_in),
+        .uo_out(uo_out_from_user_peri[5]),
+
+        .address(addr_in[5:0]),
+        .data_in(data_in),
+
+        .data_write_n(data_write_n | {2{~peri_user[5]}}),
+        .data_read_n(data_read_n   | {2{~peri_user[5]}}),
+
+        .data_out(data_from_user_peri[5]),
+        .data_ready(data_ready_from_user_peri[5]),
+
+        .user_interrupt(user_interrupts[5])
+    );
+
     // Unallocated peripherals, move up to explicit entry above to add a design.
     generate
-        for (i = 5; i < 16; i = i + 1) begin
+        for (i = 6; i < 16; i = i + 1) begin
             tqvp_example i_user_peri (
                 .clk(clk),
                 .rst_n(rst_n),
