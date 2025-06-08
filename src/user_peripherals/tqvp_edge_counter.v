@@ -104,4 +104,7 @@ module tqvp_edge_counter #(
     // DP (uo_out[7]) lights when counter > 0x0F
     assign uo_out = {counter > 8'h0F, seg}; // {DP, G…A}
 
+    // List all unused inputs to prevent warnings
+    wire _unused = &{ui_in, 1'b0};
+
 endmodule

@@ -58,4 +58,8 @@ module tqvp_simple_pwm (
     assign data_out = (address == 4'h0) ? level :
                       (address == 4'h1) ? count :
                       8'h0;
+
+    // List all unused inputs to prevent warnings
+    wire _unused = &{ui_in, 1'b0};
+
 endmodule
